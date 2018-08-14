@@ -26,7 +26,7 @@ def k_nearest(X_train, y_train, x_test, n):
 
     # get the n nearest neighbors
     nearest_indices = distances[:n]
-    nearest_neighbors = np.array([y_train[i] for i in nearest_indices])
+    nearest_neighbors = np.array([y_train[int(i)] for i in nearest_indices])
 
     # predict the label of x_test based on the majority label of its nearest neighbors
     labels, first_label_indices = np.unique(nearest_neighbors, return_inverse=True)
@@ -34,24 +34,3 @@ def k_nearest(X_train, y_train, x_test, n):
     majority_index = counts.argmax()
     predicted_label = labels[majority_index]
     return predicted_label
-
-
-if __name__ == '__main__':
-    # model the two dimensional feature space below as nested numpy arrays
-    #
-    #   |
-    # 2 | o           x
-    #   |
-    # 1 | x   o       x
-    #   |________________
-    #     1   2   3   4
-
-    X_train = np.array([[1, 1],  # x
-                        [1, 2],  # o
-                        [2, 1],  # o
-                        [4, 1],  # x
-                        [4, 2]]) # x
-    y_train = np.array(['x', 'o', 'o', 'x', 'x'])
-    x_test = X_train[0]
-    res = k_nearest(X_train, y_train, x_test, 5)
-    print('got res: {}'.format(res))
