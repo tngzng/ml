@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def k_nearest(X_train, y_train, x_test, n):
+def k_nearest(X_train, y_train, x_test, k):
     '''
     :param (np array) X_train:
     a numpy array of numpy arrays, where each nested array represents the feature
@@ -13,19 +13,19 @@ def k_nearest(X_train, y_train, x_test, n):
     :param (np array) x_test: a numpy array, representing the feature vector for
     a new sample we would like to predict.
 
-    :param (int) n: the number of nearest neighbors to look at.
+    :param (int) k: the number of nearest neighbors to look at.
 
     :returns (str): the predicted label for x_test.
     '''
-    if n % 2 != 1:
-        raise TypeError('n must be an odd integer.')
-    if n > len(X_train):
-        raise TypeError('n must be smaller than the training set X_train.')
+    if k % 2 != 1:
+        raise TypeError('k must be an odd integer.')
+    if k > len(X_train):
+        raise TypeError('k must be smaller than the training set X_train.')
     # calculate euclidean distances between each element in X_train and x_test
     distances = np.array([np.linalg.norm(x_train - x_test) for x_train in X_train])
 
-    # get the n nearest neighbors
-    nearest_indices = distances[:n]
+    # get the k nearest neighbors
+    nearest_indices = distances[:k]
     nearest_neighbors = np.array([y_train[int(i)] for i in nearest_indices])
 
     # predict the label of x_test based on the majority label of its nearest neighbors
