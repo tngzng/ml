@@ -33,10 +33,20 @@ class LinearRegression:
         return self.m, self.b
 
     def predict(self, x):
-        pass
+        '''
+        plug the input x into the formula for the line we've fit to the training data
+
+        you've no doubt seen this formula before, but here it is *just* in case:
+
+        y = mx + b
+        '''
+        predicted_y = self.m * x + b
+        return predicted_y
 
 
 clf = LinearRegression()
 m, b = clf.train(np.array([1, 2, 3]), np.array([1, 2, 3]))
 print('m: {}'.format(m))
 print('b: {}'.format(b))
+y = clf.predict(4)
+print('predicted y: {}'.format(y))
