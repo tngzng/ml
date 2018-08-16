@@ -3,9 +3,8 @@ import numpy as np
 
 def k_nearest(X_train, y_train, x_test, k):
     '''
-    :param (np array) X_train:
-    a numpy array of numpy arrays, where each nested array represents the feature
-    vector for a given sample in our training set.
+    :param (np array) X_train: a numpy array of numpy arrays, where each nested
+    array represents the feature vector for a given sample in our training set.
 
     :param (np array) y_train: a numpy array, where each element represents the
     label corresponding to a given sample from X_train.
