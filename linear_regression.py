@@ -42,11 +42,3 @@ class LinearRegression:
         '''
         predicted_y = self.m * x + b
         return predicted_y
-
-
-clf = LinearRegression()
-m, b = clf.train(np.array([1, 2, 3]), np.array([1, 2, 3]))
-print('m: {}'.format(m))
-print('b: {}'.format(b))
-y = clf.predict(4)
-print('predicted y: {}'.format(y))
