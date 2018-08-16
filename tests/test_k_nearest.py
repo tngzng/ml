@@ -46,3 +46,7 @@ class TestKNearest(unittest.TestCase):
                 k_nearest(self.X_train, self.y_train, self.x_test, k)
 
             self.assertTrue(expected_msg in context.exception)
+
+
+if __name__ == '__main__':
+    unittest.main()
