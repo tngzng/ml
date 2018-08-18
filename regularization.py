@@ -29,15 +29,3 @@ def l1(W, alpha=1.0):
     alpha * sum(abs(W))
     '''
     return alpha * abs(W).sum()
-
-
-arr_1 = np.array([100] * 100)
-arr_2 = np.array([10000] + [0] * 99)
-
-print(l2(arr_1, 1.0))
-print(l2(arr_2, 1.0))
-print('')
-print(l1(arr_1, 1.0))
-print(l1(arr_2, 1.0))
-
-
