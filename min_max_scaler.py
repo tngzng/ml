@@ -20,20 +20,14 @@ def min_max_scaler(X):
     '''
     # take the transpose of X to get each feature column as its own row
     all_features = X.T
-    all_normalized_features = []
+    all_scaled_features = []
     for features in all_features:
         feature_min = features.min()
         feature_max = features.max()
         # apply min max to the features vector
-        normalized_features = (features - feature_min) / float(feature_max - feature_min)
-        all_normalized_features.append(normalized_features)
+        scaled_features = (features - feature_min) / float(feature_max - feature_min)
+        all_scaled_features.append(scaled_features)
 
     # transpose again to return the features to columns rather than rows
-    normalized_X = np.array(all_normalized_features).T
-    return normalized_X
-
-
-feature_1_vals = np.array(range(10))
-feature_2_vals = feature_1_vals * 2
-X = np.array(zip(feature_1_vals, feature_2_vals))
-print(min_max_scaler(X))
+    scaled_X = np.array(all_scaled_features).T
+    return scaled_X
