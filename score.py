@@ -5,7 +5,9 @@ def accuracy(y_actual, y_predicted):
     '''
     the fraction of samples that were classified correctly
     '''
-    pass
+    is_true_positive_or_negative = y_actual == y_predicted
+    true_positives_and_negatives = [x for x in is_true_positive_or_negative if x == True]
+    return float(len(true_positives_and_negatives)) / len(y_actual)
 
 
 def recall(y_actual, y_predicted):
@@ -14,7 +16,10 @@ def recall(y_actual, y_predicted):
 
     correctly predicted positive / all actual positive
     '''
-    pass
+    is_true_positive = y_actual & y_predicted
+    true_positives = [x for x in is_true_positive if x == True]
+    actual_positives = [x for x in y_actual if x == True]
+    return float(len(true_positives)) / len(actual_positives)
 
 
 def precision(y_actual, y_predicted):
@@ -23,7 +28,10 @@ def precision(y_actual, y_predicted):
 
     correctly predicted positive / all predicted positive
     '''
-    pass
+    is_true_positive = y_actual & y_predicted
+    true_positives = [x for x in is_true_positive if x == True]
+    predicted_positive = [x for x in y_predicted if x == True]
+    return float(len(true_positives)) / len(predicted_positive)
 
 
 def f_score(y_actual, y_predicted, beta=1.0):
@@ -38,3 +46,13 @@ def f_score(y_actual, y_predicted, beta=1.0):
     (1 + beta) * ((precision * recall) / ((beta * precision) + recall))
     '''
     pass
+
+
+y_actual = np.array([False] * 5 + [True] * 5)
+y_predicted = np.array([True] * 10)
+print(accuracy(y_actual, y_predicted))
+print(recall(y_actual, y_predicted))
+print(precision(y_actual, y_predicted))
+
+y_actual = np.array([True] * 10)
+y_predicted = np.array([False] * 5 + [True] * 5)
