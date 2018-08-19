@@ -12,7 +12,7 @@ class TestScore(unittest.TestCase):
         self.all_trues = np.array([True] * 10)
         self.half_true_half_false = np.array([False] * 5 + [True] * 5)
 
-    def test_accuracy(self):
+    def test_accuracy_score(self):
         # when half of our predictions are false negatives and half are true positives
         # our accuracy is 50%
         y_actual = self.all_trues
@@ -27,6 +27,20 @@ class TestScore(unittest.TestCase):
         accuracy = accuracy_score(y_actual, y_predicted)
         assert accuracy == .5
 
+    def test_recall_score(self):
+        # we get penalized for calling something false that's actually true
+        # (ie penalized for false negatives)
+        y_actual = self.all_trues
+        y_predicted = self.half_true_half_false
+        recall = recall_score(y_actual, y_predicted)
+        assert recall == .5
+
+        # we don't get penalized for calling something true that's actually false
+        # (ie not penalized for false positives)
+        y_actual = self.half_true_half_false
+        y_predicted = self.all_trues
+        recall = recall_score(y_actual, y_predicted)
+        assert recall == 1.0
 
 if __name__ == '__main__':
     unittest.main()
