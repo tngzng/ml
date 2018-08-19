@@ -42,5 +42,21 @@ class TestScore(unittest.TestCase):
         recall = recall_score(y_actual, y_predicted)
         assert recall == 1.0
 
+    def test_precision_score(self):
+        # we don't get penalized for calling something false that's actually true
+        # (ie not penalized for false negatives)
+        y_actual = self.all_trues
+        y_predicted = self.half_true_half_false
+        precision = precision_score(y_actual, y_predicted)
+        assert precision == 1.0
+
+        # we get penalized for calling something true that's actually false
+        # (ie penalized for false positives)
+        y_actual = self.half_true_half_false
+        y_predicted = self.all_trues
+        precision = precision_score(y_actual, y_predicted)
+        assert precision == .5
+
+
 if __name__ == '__main__':
     unittest.main()

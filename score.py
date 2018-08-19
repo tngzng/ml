@@ -24,7 +24,7 @@ def recall_score(y_actual, y_predicted):
 
 def precision_score(y_actual, y_predicted):
     '''
-    positive prediction rate
+    positive predictive value
 
     correctly predicted positive / all predicted positive
     '''
@@ -46,13 +46,3 @@ def f_score(y_actual, y_predicted, beta=1.0):
     (1 + beta) * ((precision * recall) / ((beta * precision) + recall))
     '''
     pass
-
-
-y_actual = np.array([False] * 5 + [True] * 5)
-y_predicted = np.array([True] * 10)
-print(accuracy_score(y_actual, y_predicted))
-print(recall_score(y_actual, y_predicted))
-print(precision_score(y_actual, y_predicted))
-
-y_actual = np.array([True] * 10)
-y_predicted = np.array([False] * 5 + [True] * 5)
