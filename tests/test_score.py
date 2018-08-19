@@ -4,7 +4,7 @@ sys.path.append(os.path.abspath(os.path.dirname(__file__) + '../..'))
 import unittest
 import numpy as np
 
-from score import accuracy_score, recall_score, precision_score
+from score import accuracy_score, recall_score, precision_score, f_score
 
 
 class TestScore(unittest.TestCase):
@@ -56,6 +56,22 @@ class TestScore(unittest.TestCase):
         y_predicted = self.all_trues
         precision = precision_score(y_actual, y_predicted)
         assert precision == .5
+
+    def test_f_score(self):
+        # when beta defaults to 1.0, neither precision or recall is weighted more
+        f_higher_precision = f_score(self.all_trues, self.half_true_half_false)
+        f_higher_recall = f_score(self.half_true_half_false, self.all_trues)
+        assert f_higher_precision == f_higher_recall
+
+        # when beta is higher than the default, recall is weighted more
+        f_higher_precision = f_score(self.all_trues, self.half_true_half_false, beta=2.0)
+        f_higher_recall = f_score(self.half_true_half_false, self.all_trues, beta=2.0)
+        assert f_higher_recall > f_higher_precision
+
+        # when beta is less than the default, precision is weighted more
+        f_higher_precision = f_score(self.all_trues, self.half_true_half_false, beta=.5)
+        f_higher_recall = f_score(self.half_true_half_false, self.all_trues, beta=.5)
+        assert f_higher_precision > f_higher_recall
 
 
 if __name__ == '__main__':

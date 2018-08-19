@@ -45,4 +45,7 @@ def f_score(y_actual, y_predicted, beta=1.0):
 
     (1 + beta) * ((precision * recall) / ((beta * precision) + recall))
     '''
-    pass
+    beta = float(beta)
+    precision = precision_score(y_actual, y_predicted)
+    recall = recall_score(y_actual, y_predicted)
+    return (1 + beta) * ((precision * recall) / ((beta * precision) + recall))
