@@ -141,29 +141,3 @@ class DecisionNode:
 
     def set_classification(self, classification):
         self.classification = classification
-
-
-play_or_not = np.array([['sunny',    'hot',  'high',   False, False],
-                        ['sunny',    'hot',  'high',   True,  False],
-                        ['overcast', 'hot',  'high',   False, True],
-                        ['rainy',    'mild', 'high',   False, True],
-                        ['rainy',    'cool', 'normal', False, True],
-                        ['rainy',    'cool', 'normal', True,  False],
-                        ['overcast', 'cool', 'normal', True,  True],
-                        ['sunny',    'mild', 'high',   False, False],
-                        ['sunny',    'cool', 'normal', False, True],
-                        ['rainy',    'mild', 'normal', False, True],
-                        ['sunny',    'mild', 'normal', True,  True],
-                        ['overcast', 'mild', 'high',   True,  True],
-                        ['overcast', 'hot',  'normal', False, True],
-                        ['rainy',    'mild', 'high',   True,  False]])
-
-
-X_train = play_or_not[:, :-1]
-y_train = (play_or_not[:, -1:]).reshape(len(play_or_not),)
-y_train = np.array([True if x == 'True' else False for x in y_train])
-feature_names = ['outlook', 'temp', 'humidity', 'windy']
-clf = DecisionTreeClassifier()
-clf.fit(X_train, y_train, feature_names)
-x = np.array(['sunny', 'hot',  'high',   False, False])
-print(clf.predict(x))
