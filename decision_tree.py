@@ -4,19 +4,19 @@ import numpy as np
 
 
 class DecisionTreeClassifier:
-    def __init__(self, max_depth=None):
+    INFO_GAIN_THRESHOLD = .05
+    def __init__(self):
         self.root = None
-        self.max_depth = max_depth
 
     def fit(self, X_train, y_train, feature_names):
         root_node = DecisionNode(X_train, y_train, feature_names)
         self.root = root_node
-        self.branch(root_node)
+        self._branch(root_node)
 
     def predict(self, x):
         pass
 
-    def calculate_entropy(self, classifications):
+    def _calculate_entropy(self, classifications):
         '''
         for binary classification, we have two possible values:
         the positive and negative classes
@@ -42,7 +42,7 @@ class DecisionTreeClassifier:
         entropy = entropy_p + entropy_q
         return entropy
 
-    def branch(self, decision_node):
+    def _branch(self, decision_node):
         '''
         calculate all possible feature splits for the data in a decision node
         be dumb and just recalculate features we've already split on
@@ -53,7 +53,7 @@ class DecisionTreeClassifier:
         feature_sets = decision_node.data.T
         y_values = decision_node.y_values
         feature_names = decision_node.feature_names
-        starting_entropy = self.calculate_entropy(y_values)
+        starting_entropy = self._calculate_entropy(y_values)
 
         entropies = []
         for feature_set in feature_sets:
@@ -72,14 +72,22 @@ class DecisionTreeClassifier:
             entropy_for_feature = 0
             for feature_val in classifications_by_feature:
                 feature_val_classifications = np.array(classifications_by_feature[feature_val])
-                feature_val_entropy = self.calculate_entropy(feature_val_classifications)
+                feature_val_entropy = self._calculate_entropy(feature_val_classifications)
                 ratio_feature_val = float(len(feature_val_classifications)) / len(y_values)
                 entropy_for_feature += ratio_feature_val * feature_val_entropy
             entropies.append(entropy_for_feature)
 
-        info_gain = np.array([starting_entropy - entropy for entropy in entropies])
-        highest_info_gain_i = info_gain.argmax()
+        info_gains = np.array([starting_entropy - entropy for entropy in entropies])
+        highest_info_gain_i = info_gains.argmax()
         highest_info_feature = feature_names[highest_info_gain_i]
+        highest_info_gain = starting_entropy - entropies[highest_info_gain_i]
+        # if our info gain is very small, set a classification and stop branching
+        if highest_info_gain < self.INFO_GAIN_THRESHOLD:
+            counts = np.bincount(y_values.astype(int))
+            classification = True if np.argmax(counts) == 1 else False
+            decision_node.set_classification(classification)
+            return
+
         # now that we have a feature with the highest info gain for the node
         # we label the node with the feature and split it into children
         decision_node.set_feature(highest_info_feature)
@@ -98,10 +106,10 @@ class DecisionTreeClassifier:
             for i in feature_indices:
                 child_data.append(decision_node.data[i])
                 child_y_values.append(decision_node.y_values[i])
-            child_node = DecisionNode(child_data, child_y_values, feature_names)
-            # TODO add check to end when all leaves are pure OR max_tree_depth is reached
-            # and make this recursive !! :D
-            # self._branch(child_node)
+            child_node = DecisionNode(np.array(child_data), np.array(child_y_values), feature_names)
+            decision_node.add_child(feature, child_node)
+            self._branch(child_node)
+
 
 class DecisionNode:
     def __init__(self, data, y_values, feature_names, feature=None, classification=None):
@@ -112,11 +120,14 @@ class DecisionNode:
         self.children_by_attribute = {}
         self.classification = classification
 
-    def add_child(self, classification, decision_node):
-        self.children[classification] = decision_node
+    def add_child(self, attribute, decision_node):
+        self.children_by_attribute[attribute] = decision_node
 
     def set_feature(self, feature):
         self.feature = feature
+
+    def set_classification(self, classification):
+        self.classification = classification
 
 
 play_or_not = np.array([['sunny',    'hot',  'high',   False, False],
