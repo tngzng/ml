@@ -67,9 +67,14 @@ class TestDecisionTreeClassifier(unittest.TestCase):
     def test_predict(self):
         clf = DecisionTreeClassifier()
         clf.fit(self.X_train, self.y_train, self.feature_names)
-        x = np.array(['sunny', 'hot', 'high', False, False])
-        clf.predict(x)
-        # TODO test
+        expected_for_x = [
+            (np.array(['sunny', 'hot', 'high', False]), False),  # sunny outlook + high humidity -> don't play
+            (np.array(['sunny', 'hot', 'normal', False]), True),  # sunny outlook + normal humidity -> play
+            (np.array(['overcast', 'hot', 'high', False]), True),  # overcast outlook -> don't play
+        ]
+        for x, expected in expected_for_x:
+            output = clf.predict(x)
+            assert output == expected
 
     def test_calculate_entropy(self):
         clf = DecisionTreeClassifier()
