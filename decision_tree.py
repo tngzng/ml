@@ -5,16 +5,29 @@ import numpy as np
 
 class DecisionTreeClassifier:
     INFO_GAIN_THRESHOLD = .05
+
     def __init__(self):
         self.root = None
+        self.feature_names = None
 
     def fit(self, X_train, y_train, feature_names):
+        self.feature_names = feature_names
         root_node = DecisionNode(X_train, y_train, feature_names)
         self.root = root_node
         self._branch(root_node)
 
     def predict(self, x):
-        pass
+        node = self.root
+        while True:
+            # leaf nodes have a classification attribute
+            # return the classification when we hit a leaf node\
+            if node.classification is not None:
+                return node.classification
+            feature = node.feature
+            children_by_attribute = node.children_by_attribute
+            feature_i = self.feature_names.index(feature)
+            feature_attr = x[feature_i]
+            node = children_by_attribute[feature_attr]
 
     def _calculate_entropy(self, classifications):
         '''
@@ -152,3 +165,5 @@ y_train = np.array([True if x == 'True' else False for x in y_train])
 feature_names = ['outlook', 'temp', 'humidity', 'windy']
 clf = DecisionTreeClassifier()
 clf.fit(X_train, y_train, feature_names)
+x = np.array(['sunny', 'hot',  'high',   False, False])
+print(clf.predict(x))
