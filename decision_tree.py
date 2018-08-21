@@ -18,6 +18,18 @@ class DecisionTreeClassifier:
 
     def calculate_entropy(self, classifications):
         '''
+        for binary classification, we have two possible values:
+        the positive and negative classes
+
+        the formula for entropy we use is:
+
+        entropy(p, q) = - p * log2(p) - q * log2(q)
+
+        where p is the ratio of the positive class in a node
+        and q is the ratio of the negative class in a node
+
+        since there are only two possible values, q is equal to 1 - p
+
         :param np.array classifications: numpy array of True/False classifications for a possible branch
         '''
         ratio_positive = float(classifications.sum()) / len(classifications)  # ratio of elements classified as True
@@ -39,45 +51,57 @@ class DecisionTreeClassifier:
         recursively call branch on the children nodes if they're not pure within some threshold
         '''
         feature_sets = decision_node.data.T
+        y_values = decision_node.y_values
+        feature_names = decision_node.feature_names
+        starting_entropy = self.calculate_entropy(y_values)
+
         entropies = []
-        all_classifications = []
         for feature_set in feature_sets:
             classifications_by_feature = {}
             # construct a data structure that looks like this
             # {'rainy': [True, True, False, True, False],
             # 'overcast': [True, True, True, True],
             # 'sunny': [False, False, False, True, True]}
-            # where the key is the feature and the
+            # where the key is the feature attribute and the
             # value is a list of classifications (True or False) for that feature
             for i, feature_val in enumerate(feature_set):
                 if not classifications_by_feature.get(feature_val):
                     classifications_by_feature[feature_val] = []
-                classifications_by_feature[feature_val].append(y_test[i])
+                classifications_by_feature[feature_val].append(y_values[i])
+
             entropy_for_feature = 0
             for feature_val in classifications_by_feature:
                 feature_val_classifications = np.array(classifications_by_feature[feature_val])
-                feature_val_entropy = calculate_entropy(feature_val_classifications)
-                ratio_feature_val = float(len(feature_val_classifications)) / len(y_test)
+                feature_val_entropy = self.calculate_entropy(feature_val_classifications)
+                ratio_feature_val = float(len(feature_val_classifications)) / len(y_values)
                 entropy_for_feature += ratio_feature_val * feature_val_entropy
             entropies.append(entropy_for_feature)
-            all_classifications.append(classifications_by_feature)
 
         info_gain = np.array([starting_entropy - entropy for entropy in entropies])
         highest_info_gain_i = info_gain.argmax()
         highest_info_feature = feature_names[highest_info_gain_i]
-        # make new decision node for highest info gain feature
-        # store all data on root decision node
-        decision_node = DecisionNode(highest_info_feature, X_test)
-        # make children for root for each feature value (ie sunny, rainy)
-        highest_info_classifications = all_classifications[highest_info_gain_i]
-        for classifications in highest_info_classifications:
-            # we actually need to pass the data associated w the subset of X_test that matches a given feature attr
-            # this is just the y labels currently
-            child_node = DecisionNode(classifications)
-            # recursively perform the same split for the child nodes
-            # TODO add check to end when all leaves are pure OR max_tree_depth is reached
-            self._branch(child_node)
+        # now that we have a feature with the highest info gain for the node
+        # we label the node with the feature and split it into children
+        decision_node.set_feature(highest_info_feature)
 
+        feature_set = feature_sets[highest_info_gain_i]
+        indices_by_feature = {}
+        for i, feature_val in enumerate(feature_set):
+            if not indices_by_feature.get(feature_val):
+                indices_by_feature[feature_val] = []
+            indices_by_feature[feature_val].append(i)
+
+        for feature in indices_by_feature:
+            feature_indices = indices_by_feature[feature]
+            child_data = []
+            child_y_values = []
+            for i in feature_indices:
+                child_data.append(decision_node.data[i])
+                child_y_values.append(decision_node.y_values[i])
+            child_node = DecisionNode(child_data, child_y_values, feature_names)
+            # TODO add check to end when all leaves are pure OR max_tree_depth is reached
+            # and make this recursive !! :D
+            # self._branch(child_node)
 
 class DecisionNode:
     def __init__(self, data, y_values, feature_names, feature=None, classification=None):
@@ -87,8 +111,12 @@ class DecisionNode:
         self.feature = feature
         self.children_by_attribute = {}
         self.classification = classification
+
     def add_child(self, classification, decision_node):
         self.children[classification] = decision_node
+
+    def set_feature(self, feature):
+        self.feature = feature
 
 
 play_or_not = np.array([['sunny',    'hot',  'high',   False, False],
@@ -106,10 +134,7 @@ play_or_not = np.array([['sunny',    'hot',  'high',   False, False],
                         ['overcast', 'hot',  'normal', False, True],
                         ['rainy',    'mild', 'high',   True,  False]])
 
-# entropy(p1, p2, ..., pn) = - p1 * log2(p1) - p2 * log2(p2) ... - pn * log2(pn)
-# in our case we have two p values: True for play or False for no play, so we can simplify to
-# entropy(p, q) = - p * log2(p) - q * log2(q)
-# since there are only two possible values, p is equal to 1 - q
+
 X_train = play_or_not[:, :-1]
 y_train = (play_or_not[:, -1:]).reshape(len(play_or_not),)
 y_train = np.array([True if x == 'True' else False for x in y_train])
