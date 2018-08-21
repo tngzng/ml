@@ -78,7 +78,10 @@ class TestDecisionTreeClassifier(unittest.TestCase):
 
     def test_calculate_entropy(self):
         clf = DecisionTreeClassifier()
-        # TODO test
+        all_positive_class = np.array([True, True])
+        assert clf._calculate_entropy(all_positive_class) == 0.0
+        fifty_fifty_mix = np.array([True, False])
+        assert clf._calculate_entropy(fifty_fifty_mix) == 1.0
 
 
 if __name__ == '__main__':
