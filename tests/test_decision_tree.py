@@ -51,15 +51,18 @@ class TestDecisionTreeClassifier(unittest.TestCase):
         #        /           \            /           \
         #      class:      class:      class:        class:
         #      True        False       False         True
+
         assert clf.root.feature == 'outlook'
-        assert clf.root.children_by_attribute['rainy'].feature == 'windy'
-        assert clf.root.children_by_attribute['overcast'].classification == True
-        assert clf.root.children_by_attribute['sunny'].feature == 'humidity'
-        # TODO child nodes should be their own vars for readability
-        assert clf.root.children_by_attribute['rainy'].children_by_attribute['False'].classification == True
-        assert clf.root.children_by_attribute['rainy'].children_by_attribute['True'].classification == False
-        assert clf.root.children_by_attribute['sunny'].children_by_attribute['high'].classification == False
-        assert clf.root.children_by_attribute['sunny'].children_by_attribute['normal'].classification == True
+        rainy_node = clf.root.children_by_attribute['rainy']
+        overcast_node = clf.root.children_by_attribute['overcast']
+        sunny_node = clf.root.children_by_attribute['sunny']
+        assert rainy_node.feature == 'windy'
+        assert overcast_node.classification == True
+        assert sunny_node.feature == 'humidity'
+        assert rainy_node.children_by_attribute['False'].classification == True
+        assert rainy_node.children_by_attribute['True'].classification == False
+        assert sunny_node.children_by_attribute['high'].classification == False
+        assert sunny_node.children_by_attribute['normal'].classification == True
 
     def test_predict(self):
         clf = DecisionTreeClassifier()
